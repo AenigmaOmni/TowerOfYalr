@@ -1,55 +1,161 @@
-local DOOR = 486
 local FLOOR = 1
 local WALL = 625
 
+local max_iter = 500
+local max_backup_iter = 500
 local dungeon = {}
+local start_x, start_y, dungeon_width, dungeon_height
+local num_rooms = 30
+local rooms = 0
+local size = 3
+local spacer = 1
 
-local function fill_with_walls(sx, sy, sw, sh)
-	for x = sx, sw, 1 do
-		for y = sy, sh, 1 do
-			tilemap.set_tile("#tilemap_dungeon", "layer1", x, y, WALL)
-		end
-	end
-end
-
-local function make_rooms()
-	for k, v in ipairs(dungeon) do
-		--leaf
-		local leaf = v
-
-		--child a room
-		for x = leaf.x + 1, leaf.x + leaf.width - 1, 1 do
-			for y = leaf.y + 1, leaf.y + leaf.height - 2, 1 do
-				tilemap.set_tile("#tilemap_dungeon", "layer1", x, y, FLOOR)
+local function not_overlap(x, y, width, height)
+	for k,v in ipairs(dungeon) do
+		if v.x == x then
+			if v.y == y then
+				return false
 			end
 		end
 	end
+	return true
 end
 
-local function split_horizontal(rx, ry, rw, rh)
-	local splitX = math.random(rx + 3, rx + rw - 3)
-	local childA = {x = rx, y = ry, width = splitX - rx, height = rh}
-	local childB = {x = splitX, y = ry, width = (rx + rw) - splitX, height = rh}
-	return childA, childB
-
+local function in_bounds(rx, ry, rw, rh)
+	if rx > start_x then
+		if rx < start_x + dungeon_width then
+			if ry > start_y then
+				if ry < start_y + dungeon_height then
+					if rx + rw < start_x + dungeon_width then
+						if ry + rh < start_y + dungeon_height then
+							return true
+						end
+					end
+				end
+			end
+		end
+	end
+	return false	
 end
 
-local function generate(x, y, w, h)
-	fill_with_walls(x, y, w, h)
+local function make_start_room(rx, ry, rw, rh)
+	local done = false
+	local room
+	while not done do
+		local x = rx + rw / 2
+		local y = ry + rh / 2
+		local width = size
+		local height = size
+		if in_bounds(x, y, width, height) then
+			room = { x=x, y=y, w=width, h=height}
+			done = true
+		end
+	end
+	rooms = rooms + 1
+	return room
+end
 
-	local leafA, leaf1 = split_horizontal(x, y, w, h)
+local function make_room(room)
+	local done = false
+	local r
+	local c = 0
+	while not done do
+		c = c + 1
+		local dir = math.random(1, 4)
+		local x, y
+		if dir == 1 then --up
+			x = room.x
+			y = room.y + size + spacer * 2
+		elseif dir == 2 then --down
+			x = room.x
+			y = room.y - size - spacer * 2
+		elseif dir == 3 then -- right
+			x = room.x + size + spacer * 2
+			y = room.y
+		elseif dir == 4 then --left
+			x = room.x - size - spacer * 2
+			y = room.y
+		end
+		local width = size
+		local height = size
+		if in_bounds(x, y, width, height) then
+			if not_overlap(x, y, width, height) then
+				r = { x=x, y=y, w=width, h=height}
+				done = true
+			end
+		end
 
-	--of leafA
-	local leafB1, leafB2 = split_horizontal(leafA.x, leafA.y, leafA.width, leafA.height)
-	table.insert(dungeon, leafB1)
-	table.insert(dungeon, leafB2)
-	
-	--of leaf1
-	local leaf1A, leaf1B = split_horizontal(leaf1.x, leaf1.y, leaf1.width, leaf1.height) 
-	table.insert(dungeon, leaf1A)
-	table.insert(dungeon, leaf1B)
+		if c >= max_iter then
+			print("Critical error: Reached max iter")
+			print("Trying plan B")
+			local c2 = 0
+			while not done do
+				c2 = c2 + 1
+				local dir = math.random(1, 4)
+				local x, y
+				if dir == 1 then --up 2
+					x = room.x
+					y = room.y + size * 2 + spacer * 2
+				elseif dir == 2 then --down 2
+					x = room.x
+					y = room.y - size * 2 - spacer * 2
+				elseif dir == 3 then -- right 2
+					x = room.x + size * 2 + spacer * 2
+					y = room.y
+				elseif dir == 4 then --left 2
+					x = room.x - size * 2 - spacer * 2
+					y = room.y
+				end
+				local width = size
+				local height = size
+				if in_bounds(x, y, width, height) then
+					if not_overlap(x, y, width, height) then
+						r = { x=x, y=y, w=width, h=height}
+						print("Backup plan successful :)")
+						done = true
+					end
+				end
+				if done == false and c2 >= max_backup_iter then
+					print("Backup plan failed, stopping generation. :(")
+					rooms = num_rooms
+					break
+				end
+			end
+		end
+	end
+	rooms = rooms + 1
+	return r	
+end
 
-	make_rooms()
+local function fill(rx, ry, rw, rh, tile)
+	for x = rx, rx + rw, 1 do
+		for y = ry, ry + rh, 1 do
+			tilemap.set_tile("#tilemap_dungeon", "layer1", x, y, tile)
+		end
+	end
+end
+
+local function carve_rooms()
+	for k,v in ipairs(dungeon) do
+		fill(v.x, v.y, v.w, v.h, FLOOR)
+	end
+end
+
+local function generate(r)
+	local s_room = make_start_room(start_x, start_y, dungeon_width, dungeon_height)
+	table.insert(dungeon, s_room)
+
+	local r = make_room(s_room)
+	table.insert(dungeon, r)
+
+	while rooms < num_rooms do
+		table.insert(dungeon, make_room(dungeon[rooms]))
+	end
+
+	--Fill the dungoen with walls
+	fill(start_x, start_y, dungeon_width, dungeon_height, WALL)
+	--Carve rooms
+	carve_rooms()
 end
 
 function init(self)
@@ -60,12 +166,6 @@ function init(self)
 	math.random()
 	math.random()
 	math.random()
-	local x,y,w,h = tilemap.get_bounds("#tilemap_dungeon")
-	generate(x, y, w, h)
-end
-
-function on_message(self, message_id, message, sender)
-	-- Add message-handling code here
-	-- Learn more: https://defold.com/manuals/message-passing/
-	-- Remove this function if not needed
+	start_x ,start_y, dungeon_width, dungeon_height = tilemap.get_bounds("#tilemap_dungeon")
+	generate()
 end
