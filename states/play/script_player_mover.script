@@ -4,8 +4,15 @@ end
 
 local function move(self)
 	local p = go.get_position()
-	p = p + (self.move * self.spacer)
-	go.set_position(p)
+	local size = go.get("object_globals#script_globals", "tilemap_size")
+	p.x = p.x + self.move.x * self.spacer
+	p.y = p.y + self.move.y * self.spacer
+	local x = p.x / size
+	local y = p.y / size
+	local tile = tilemap.get_tile("object_tilemap_dungeon#tilemap_dungeon", "layer1", math.ceil(x), math.floor(y))
+	if tile == 1 then
+		go.set_position(p)
+	end
 	self.move = vmath.vector3()
 end
 
