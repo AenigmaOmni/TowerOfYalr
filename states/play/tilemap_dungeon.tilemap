@@ -1,0 +1,41 @@
+tile_set: "/res/graphics/map_source.tilesource"
+layers {
+  id: "layer1"
+  z: 0.0
+  is_visible: 1
+  cell {
+    x: 24
+    y: -26
+    tile: 1
+    h_flip: 0
+    v_flip: 0
+  }
+  cell {
+    x: -26
+    y: -26
+    tile: 1
+    h_flip: 0
+    v_flip: 0
+  }
+  cell {
+    x: 24
+    y: 24
+    tile: 1
+    h_flip: 0
+    v_flip: 0
+  }
+  cell {
+    x: -26
+    y: 24
+    tile: 1
+    h_flip: 0
+    v_flip: 0
+  }
+}
+layers {
+  id: "layer2"
+  z: 1.0
+  is_visible: 1
+}
+material: "/builtins/materials/tile_map.material"
+blend_mode: BLEND_MODE_ALPHA

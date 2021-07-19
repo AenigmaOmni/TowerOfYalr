@@ -1,0 +1,71 @@
+local DOOR = 486
+local FLOOR = 1
+local WALL = 625
+
+local dungeon = {}
+
+local function fill_with_walls(sx, sy, sw, sh)
+	for x = sx, sw, 1 do
+		for y = sy, sh, 1 do
+			tilemap.set_tile("#tilemap_dungeon", "layer1", x, y, WALL)
+		end
+	end
+end
+
+local function make_rooms()
+	for k, v in ipairs(dungeon) do
+		--leaf
+		local leaf = v
+
+		--child a room
+		for x = leaf.x + 1, leaf.x + leaf.width - 1, 1 do
+			for y = leaf.y + 1, leaf.y + leaf.height - 2, 1 do
+				tilemap.set_tile("#tilemap_dungeon", "layer1", x, y, FLOOR)
+			end
+		end
+	end
+end
+
+local function split_horizontal(rx, ry, rw, rh)
+	local splitX = math.random(rx + 3, rx + rw - 3)
+	local childA = {x = rx, y = ry, width = splitX - rx, height = rh}
+	local childB = {x = splitX, y = ry, width = (rx + rw) - splitX, height = rh}
+	return childA, childB
+
+end
+
+local function generate(x, y, w, h)
+	fill_with_walls(x, y, w, h)
+
+	local leafA, leaf1 = split_horizontal(x, y, w, h)
+
+	--of leafA
+	local leafB1, leafB2 = split_horizontal(leafA.x, leafA.y, leafA.width, leafA.height)
+	table.insert(dungeon, leafB1)
+	table.insert(dungeon, leafB2)
+	
+	--of leaf1
+	local leaf1A, leaf1B = split_horizontal(leaf1.x, leaf1.y, leaf1.width, leaf1.height) 
+	table.insert(dungeon, leaf1A)
+	table.insert(dungeon, leaf1B)
+
+	make_rooms()
+end
+
+function init(self)
+	math.randomseed(os.time())
+	math.random()
+	math.random()
+	math.random()
+	math.random()
+	math.random()
+	math.random()
+	local x,y,w,h = tilemap.get_bounds("#tilemap_dungeon")
+	generate(x, y, w, h)
+end
+
+function on_message(self, message_id, message, sender)
+	-- Add message-handling code here
+	-- Learn more: https://defold.com/manuals/message-passing/
+	-- Remove this function if not needed
+end

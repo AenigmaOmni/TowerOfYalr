@@ -1,0 +1,37 @@
+local function load_play(self)
+	msg.post("#proxy_play", "load")
+end
+
+local function unload_play(self)
+	msg.post("#proxy_play", "unload")
+end
+
+local function load_menu(self)
+
+end
+
+local function unload_menu(self)
+
+end
+
+local function load_gameover(self)
+
+end
+
+local function unload_gameover(self)
+
+end
+
+function init(self)
+	msg.post(".", "acquire_input_focus")
+	msg.post(".", "load_play")
+end
+
+function on_message(self, message_id, message, sender)
+	if message_id == hash("load_play") then
+		load_play(self)
+	end
+	if message_id == hash("proxy_loaded") then
+		msg.post(sender, "enable")
+	end
+end
