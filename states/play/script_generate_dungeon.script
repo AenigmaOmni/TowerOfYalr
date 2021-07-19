@@ -169,7 +169,7 @@ function init(self)
 	start_x ,start_y, dungeon_width, dungeon_height = tilemap.get_bounds("#tilemap_dungeon")
 	generate()
 
-	local sx = dungeon[0].x
-	local sy = dungeon[0].y
-	msg.post("#object_controller_game#script_controller_game", "gen_complete", { x=sx, y=sy})
+	local sx = dungeon[1].x
+	local sy = dungeon[1].y
+	msg.post("object_controller_game#script_controller_game", "gen_complete", { x=sx, y=sy})
 end
