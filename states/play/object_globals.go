@@ -1,0 +1,15 @@
+components {
+  id: "script_globals"
+  component: "/states/play/script_globals.script"
+  position {
+    x: 0.0
+    y: 0.0
+    z: 0.0
+  }
+  rotation {
+    x: 0.0
+    y: 0.0
+    z: 0.0
+    w: 1.0
+  }
+}

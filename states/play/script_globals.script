@@ -1,0 +1,2 @@
+go.property("tilemap_size", 16)
+go.property("hero_size", 16)
