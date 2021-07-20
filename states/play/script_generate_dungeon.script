@@ -47,7 +47,7 @@ local function make_start_room(rx, ry, rw, rh)
 		local width = size
 		local height = size
 		if in_bounds(x, y, width, height) then
-			room = { x=x, y=y, w=width, h=height}
+			room = { x=x, y=y, w=width, h=height, connection=0}
 			done = true
 		end
 	end
@@ -64,15 +64,19 @@ local function make_room(room)
 		local dir = math.random(1, 4)
 		local x, y
 		if dir == 1 then --up
+			room.connection = 1
 			x = room.x
 			y = room.y + size + spacer * 2
 		elseif dir == 2 then --down
+			room.connection = 2
 			x = room.x
 			y = room.y - size - spacer * 2
 		elseif dir == 3 then -- right
+			room.connection = 3
 			x = room.x + size + spacer * 2
 			y = room.y
 		elseif dir == 4 then --left
+			room.connection = 4
 			x = room.x - size - spacer * 2
 			y = room.y
 		end
@@ -141,6 +145,69 @@ local function carve_rooms()
 	end
 end
 
+local function carve_corridors()
+	local d_size = table.getn(dungeon)
+	--Carve path to last room
+	for i=1, d_size, 1 do
+		local sx = dungeon[i].x
+		local sy = dungeon[i].y
+		local con =dungeon[i].connection
+
+		local x = 0
+		local y = 0
+		
+		if con == 1 then
+			--up
+			x = sx + math.random(1, 3)
+			y = sy + dungeon[i].h + 1
+		elseif con == 2 then
+			--down
+			x = sx + math.random(1, 3)
+			y = sy - 1
+		elseif con == 3 then
+			--right
+			x = sx + dungeon[i].w + 1
+			y = sy + math.random(1, 3)
+		elseif con == 4 then
+			--left
+			x = sx - 1
+			y = sy + math.random(1, 3)
+		end
+
+		tilemap.set_tile("#tilemap_dungeon", "layer1", x, y, FLOOR)
+	end
+
+	--Carve random paths
+	for i=1, d_size, 1 do
+		local sx = dungeon[i].x
+		local sy = dungeon[i].y
+		local con math.random(1,4)
+
+		local x = 0
+		local y = 0
+
+		if con == 1 then
+			--up
+			x = sx + math.random(1, 3)
+			y = sy + dungeon[i].h + 1
+		elseif con == 2 then
+			--down
+			x = sx + math.random(1, 3)
+			y = sy - 1
+		elseif con == 3 then
+			--right
+			x = sx + dungeon[i].w + 1
+			y = sy + math.random(1, 3)
+		elseif con == 4 then
+			--left
+			x = sx - 1
+			y = sy + math.random(1, 3)
+		end
+		
+		tilemap.set_tile("#tilemap_dungeon", "layer1", x, y, FLOOR)
+	end
+end
+
 local function generate(r)
 	local s_room = make_start_room(start_x, start_y, dungeon_width, dungeon_height)
 	table.insert(dungeon, s_room)
@@ -156,6 +223,7 @@ local function generate(r)
 	fill(start_x, start_y, dungeon_width, dungeon_height, WALL)
 	--Carve rooms
 	carve_rooms()
+	carve_corridors()
 end
 
 function init(self)
