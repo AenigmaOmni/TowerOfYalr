@@ -1,6 +1,13 @@
 local FLOOR = 1
 local WALL = 625
 local TEST = 4
+local BONES = 721
+local TORCH = 725
+local CANDLE = 726
+local BONE2 = 722
+local WEB = 723
+local POT = 678
+local STONE = 102
 
 local max_iter = 500
 local max_backup_iter = 500
@@ -10,6 +17,8 @@ local num_rooms = 30
 local rooms = 0
 local size = 3
 local spacer = 1
+local doorways = {}
+local object_count = num_rooms * 2
 
 local function not_overlap(x, y, width, height)
 	for k,v in ipairs(dungeon) do
@@ -165,6 +174,7 @@ local function carve_corridors()
 		local t = tilemap.get_tile("#tilemap_dungeon", "layer1", x, y)
 		if t == FLOOR then
 			tilemap.set_tile("#tilemap_dungeon", "layer1", x, y-1, FLOOR)
+			table.insert(doorways, {x=x, y=y-1})
 		end
 
 		--check bottom of room
@@ -172,6 +182,7 @@ local function carve_corridors()
 		t = tilemap.get_tile("#tilemap_dungeon", "layer1", x, y)
 		if t == FLOOR then
 			tilemap.set_tile("#tilemap_dungeon", "layer1", x, y-1, FLOOR)
+			table.insert(doorways, {x=x, y=y-1})
 		end
 
 		--check left side of room
@@ -180,8 +191,8 @@ local function carve_corridors()
 		t = tilemap.get_tile("#tilemap_dungeon", "layer1", x, y)
 		if t == FLOOR then
 			x = v.x - 1
-			print("placed")
 			tilemap.set_tile("#tilemap_dungeon", "layer1", x, y, FLOOR)
+			table.insert(doorways, {x=x, y=y})
 		end
 
 		--check right side of room
@@ -190,10 +201,66 @@ local function carve_corridors()
 		t = tilemap.get_tile("#tilemap_dungeon", "layer1", x, y)
 		if t == FLOOR then
 			x = x - 1
-			print("placed")
 			tilemap.set_tile("#tilemap_dungeon", "layer1", x, y, FLOOR)
+			table.insert(doorways, {x=x, y=y})
 		end
 		
+	end
+end
+
+local function place_random_objects()
+	local count = 0
+	while count < object_count do
+		local found = false
+		local x = start_x
+		local y = start_y
+		local w = dungeon_width
+		local h = dungeon_height
+		local px 
+		local py
+
+		while not found do
+			px = math.random(x, x + w)
+			py = math.random(y, y + h)
+
+			local tile = tilemap.get_tile("#tilemap_dungeon", "layer1", px, py)
+			if tile == FLOOR then
+				for k,v in ipairs(doorways) do
+					if px ~= v.x and py ~= v.y then
+						if py ~= v.x - 1 and py ~= v.x + 1 then
+							if py ~= v.y - 1 and py ~= v.y + 1 then
+								found = true
+							else
+								print("oops 3")
+							end
+						else
+							print("oops 2")
+						end
+					else
+						print("oops")
+					end
+				end
+			end			
+		end
+		
+		local c = math.random(1, 6)
+		local t = 1
+		if c == 1 then
+			t = BONES
+		elseif c == 3 then
+			t = TORCH
+		elseif c == 2 then
+			t = BONE2
+		elseif c == 4 then
+			t = WEB
+		elseif c == 5 then
+			t = POT 
+		elseif c == 6 then
+			t = STONE
+		end
+
+		tilemap.set_tile("#tilemap_dungeon", "layer2", px, py, t)
+		count = count + 1
 	end
 end
 
@@ -215,7 +282,12 @@ local function generate(r)
 
 	--Carve rooms
 	carve_rooms()
+
+	--carve corridors
 	carve_corridors()
+
+	--place objects
+	place_random_objects()
 end
 
 function init(self)
