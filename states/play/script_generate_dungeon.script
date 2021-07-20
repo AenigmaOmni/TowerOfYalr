@@ -18,7 +18,7 @@ local rooms = 0
 local size = 3
 local spacer = 1
 local doorways = {}
-local object_count = num_rooms * 2
+local object_count = num_rooms * 1.5
 
 local function not_overlap(x, y, width, height)
 	for k,v in ipairs(dungeon) do
