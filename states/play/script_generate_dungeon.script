@@ -1,5 +1,6 @@
 local FLOOR = 1
 local WALL = 625
+local TEST = 4
 
 local max_iter = 500
 local max_backup_iter = 500
@@ -139,6 +140,15 @@ local function fill(rx, ry, rw, rh, tile)
 	end
 end
 
+local function make_dummy_rooms()
+	for k,v in ipairs(dungeon) do
+		local c = math.random(1, 4)
+		if c == 1 then
+			make_room(v)
+		end
+	end
+end
+
 local function carve_rooms()
 	for k,v in ipairs(dungeon) do
 		fill(v.x, v.y, v.w, v.h, FLOOR)
@@ -146,65 +156,44 @@ local function carve_rooms()
 end
 
 local function carve_corridors()
-	local d_size = table.getn(dungeon)
-	--Carve path to last room
-	for i=1, d_size, 1 do
-		local sx = dungeon[i].x
-		local sy = dungeon[i].y
-		local con =dungeon[i].connection
+	for k,v in ipairs(dungeon) do
+		local x = v.x + 1
+		local y = v.y
 
-		local x = 0
-		local y = 0
-		
-		if con == 1 then
-			--up
-			x = sx + math.random(1, 3)
-			y = sy + dungeon[i].h + 1
-		elseif con == 2 then
-			--down
-			x = sx + math.random(1, 3)
-			y = sy - 1
-		elseif con == 3 then
-			--right
-			x = sx + dungeon[i].w + 1
-			y = sy + math.random(1, 3)
-		elseif con == 4 then
-			--left
-			x = sx - 1
-			y = sy + math.random(1, 3)
+		--check top of room
+		y = v.y + v.h + 2
+		local t = tilemap.get_tile("#tilemap_dungeon", "layer1", x, y)
+		if t == FLOOR then
+			tilemap.set_tile("#tilemap_dungeon", "layer1", x, y-1, FLOOR)
 		end
 
-		tilemap.set_tile("#tilemap_dungeon", "layer1", x, y, FLOOR)
-	end
+		--check bottom of room
+		y = v.y - 2
+		t = tilemap.get_tile("#tilemap_dungeon", "layer1", x, y)
+		if t == FLOOR then
+			tilemap.set_tile("#tilemap_dungeon", "layer1", x, y-1, FLOOR)
+		end
 
-	--Carve random paths
-	for i=1, d_size, 1 do
-		local sx = dungeon[i].x
-		local sy = dungeon[i].y
-		local con math.random(1,4)
+		--check left side of room
+		y = v.y + 1
+		x = v.x - 2
+		t = tilemap.get_tile("#tilemap_dungeon", "layer1", x, y)
+		if t == FLOOR then
+			x = v.x - 1
+			print("placed")
+			tilemap.set_tile("#tilemap_dungeon", "layer1", x, y, FLOOR)
+		end
 
-		local x = 0
-		local y = 0
-
-		if con == 1 then
-			--up
-			x = sx + math.random(1, 3)
-			y = sy + dungeon[i].h + 1
-		elseif con == 2 then
-			--down
-			x = sx + math.random(1, 3)
-			y = sy - 1
-		elseif con == 3 then
-			--right
-			x = sx + dungeon[i].w + 1
-			y = sy + math.random(1, 3)
-		elseif con == 4 then
-			--left
-			x = sx - 1
-			y = sy + math.random(1, 3)
+		--check right side of room
+		y = v.y + 1
+		x = v.x + v.w + 2
+		t = tilemap.get_tile("#tilemap_dungeon", "layer1", x, y)
+		if t == FLOOR then
+			x = x - 1
+			print("placed")
+			tilemap.set_tile("#tilemap_dungeon", "layer1", x, y, FLOOR)
 		end
 		
-		tilemap.set_tile("#tilemap_dungeon", "layer1", x, y, FLOOR)
 	end
 end
 
@@ -219,8 +208,11 @@ local function generate(r)
 		table.insert(dungeon, make_room(dungeon[rooms]))
 	end
 
+	make_dummy_rooms()
+	
 	--Fill the dungoen with walls
 	fill(start_x, start_y, dungeon_width, dungeon_height, WALL)
+
 	--Carve rooms
 	carve_rooms()
 	carve_corridors()
