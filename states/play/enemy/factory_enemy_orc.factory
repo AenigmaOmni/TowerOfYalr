@@ -1,2 +1,2 @@
-prototype: "/states/play/object_enemy_orc.go"
+prototype: "/states/play/enemy/object_enemy_orc.go"
 load_dynamically: false

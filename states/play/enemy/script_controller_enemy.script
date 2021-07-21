@@ -1,14 +1,28 @@
-local function spawn_enemy(x, y, num)
+local function spawn_enemy(self, x, y, num)
 	local size = go.get("object_globals#script_globals", "tilemap_size")
 	local px = x * size
 	local py = y * size
-	self.enemy_count = self.enemy_count + 1
 	local pos = vmath.vector3()
 	pos.x = px
 	pos.y = py
 	pos.z = 2
-	local spooder = factory.create("#factory_enemy_spooder", pos)
-	table.insert(self.enemies, spooder)
+	if num == 1 then
+		local bat = factory.create("#factory_enemy_bat", pos)
+		table.insert(self.enemies, bat)
+		self.enemy_count = self.enemy_count + 1
+	elseif num == 2 then
+		local spooder = factory.create("#factory_enemy_spooder", pos)
+		table.insert(self.enemies, spooder)
+		self.enemy_count = self.enemy_count + 1
+	elseif num == 3 then
+		local skeleton = factory.create("#factory_enemy_skeleton", pos)
+		table.insert(self.enemies, skeleton)
+		self.enemy_count = self.enemy_count + 1
+	elseif num == 4 then
+		local orc = factory.create("#factory_enemy_orc", pos)
+		table.insert(self.enemies, orc)
+		self.enemy_count = self.enemy_count + 1
+	end
 end
 
 local function generate(self)
@@ -21,14 +35,14 @@ local function generate(self)
 			local c = math.random(100)
 			if c < 40 then
 				--spawn bat
-				spawn_enemy(x, y, 1)
+				spawn_enemy(self, x, y, 1)
 				--spawn spooder
 			elseif c < 70 then
-				spawn_enemy(x, y, 2)
+				spawn_enemy(self, x, y, 2)
 			elseif c <  90 then
-				spawn_enemy(x, y, 3)
-			else then
-				spawn_enemy(x, y, 4)
+				spawn_enemy(self, x, y, 3)
+			else
+				spawn_enemy(self, x, y, 4)
 			end
 		end
 	end

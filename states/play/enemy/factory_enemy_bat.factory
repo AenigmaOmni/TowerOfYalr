@@ -1,2 +1,2 @@
-prototype: "/states/play/object_enemy_bat.go"
+prototype: "/states/play/enemy/object_enemy_bat.go"
 load_dynamically: false

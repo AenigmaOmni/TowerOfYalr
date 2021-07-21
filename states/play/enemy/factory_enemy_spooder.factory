@@ -1,2 +1,2 @@
-prototype: "/states/play/object_enemy_spooder.go"
+prototype: "/states/play/enemy/object_enemy_spooder.go"
 load_dynamically: false
