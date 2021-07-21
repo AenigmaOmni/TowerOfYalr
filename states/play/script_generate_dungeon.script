@@ -13,6 +13,7 @@ local max_iter = 500
 local max_backup_iter = 500
 local dungeon = {}
 local start_x, start_y, dungeon_width, dungeon_height
+local tile_size = 0
 local num_rooms = 30
 local rooms = 0
 local size = 3
@@ -168,7 +169,6 @@ local function carve_corridors()
 	for k,v in ipairs(dungeon) do
 		local x = v.x + 1
 		local y = v.y
-
 		--check top of room
 		y = v.y + v.h + 2
 		local t = tilemap.get_tile("#tilemap_dungeon", "layer1", x, y)
@@ -218,28 +218,13 @@ local function place_random_objects()
 		local h = dungeon_height
 		local px 
 		local py
-
+		
 		while not found do
 			px = math.random(x, x + w)
 			py = math.random(y, y + h)
-
 			local tile = tilemap.get_tile("#tilemap_dungeon", "layer1", px, py)
 			if tile == FLOOR then
-				for k,v in ipairs(doorways) do
-					if px ~= v.x and py ~= v.y then
-						if py ~= v.x - 1 and py ~= v.x + 1 then
-							if py ~= v.y - 1 and py ~= v.y + 1 then
-								found = true
-							else
-								print("oops 3")
-							end
-						else
-							print("oops 2")
-						end
-					else
-						print("oops")
-					end
-				end
+				found = true
 			end			
 		end
 		
@@ -259,8 +244,68 @@ local function place_random_objects()
 			t = STONE
 		end
 
-		tilemap.set_tile("#tilemap_dungeon", "layer2", px, py, t)
+		tilemap.set_tile("#tilemap_dungeon", "layer1", px, py, t)
 		count = count + 1
+	end
+end
+
+local function remove_objects_in_way()
+	for k,v in ipairs(doorways) do
+		-- clear doorway
+		local x = v.x
+		local y = v.y
+		local tile = tilemap.get_tile("#tilemap_dungeon", "layer1", x, y)
+		if tile ~= FLOOR then
+			if tile == BONE2 or tile == BONES or tile == CANDLE or tile == TORCH or tile == STONE or tile == POT
+			or tile == WEB then
+				print("Clearing same spot tile")
+				tilemap.set_tile("#tilemap_dungeon", "layer1", x, y, FLOOR)
+			end
+		end
+		-- clear left spot
+		x = v.x - 1
+		y = y
+		tile = tilemap.get_tile("#tilemap_dungeon", "layer1", x, y)
+		if tile ~= FLOOR then
+			if tile == BONE2 or tile == BONES or tile == CANDLE or tile == TORCH or tile == STONE or tile == POT
+			or tile == WEB then
+				print("Clearing left spot tile")
+				tilemap.set_tile("#tilemap_dungeon", "layer1", x, y, FLOOR)
+			end
+		end
+		-- clear right spot
+		x = v.x + 1
+		y = y
+		tile = tilemap.get_tile("#tilemap_dungeon", "layer1", x, y)
+		if tile ~= FLOOR then
+			if tile == BONE2 or tile == BONES or tile == CANDLE or tile == TORCH or tile == STONE or tile == POT
+			or tile == WEB then
+				print("Clearing right spot tile")
+				tilemap.set_tile("#tilemap_dungeon", "layer1", x, y, FLOOR)
+			end
+		end
+		-- clear top spot
+		x = v.x
+		y = v.y + 1
+		tile = tilemap.get_tile("#tilemap_dungeon", "layer1", x, y)
+		if tile ~= FLOOR then
+			if tile == BONE2 or tile == BONES or tile == CANDLE or tile == TORCH or tile == STONE or tile == POT
+			or tile == WEB then
+				print("Clearing top spot tile")
+				tilemap.set_tile("#tilemap_dungeon", "layer1", x, y, FLOOR)
+			end
+		end
+		-- clear bottom spot
+		x = v.x
+		y = v.y - 1
+		tile = tilemap.get_tile("#tilemap_dungeon", "layer1", x, y)
+		if tile ~= FLOOR then
+			if tile == BONE2 or tile == BONES or tile == CANDLE or tile == TORCH or tile == STONE or tile == POT
+			or tile == WEB then
+				print("Clearing bottom spot tile")
+				tilemap.set_tile("#tilemap_dungeon", "layer1", x, y, FLOOR)
+			end
+		end
 	end
 end
 
@@ -288,6 +333,8 @@ local function generate(r)
 
 	--place objects
 	place_random_objects()
+
+	remove_objects_in_way()
 end
 
 function init(self)
@@ -299,6 +346,7 @@ function init(self)
 	math.random()
 	math.random()
 	start_x ,start_y, dungeon_width, dungeon_height = tilemap.get_bounds("#tilemap_dungeon")
+	local tile_size = go.get("object_globals#script_globals", "tilemap_size")
 	generate()
 
 	local sx = dungeon[1].x

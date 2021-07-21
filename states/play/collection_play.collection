@@ -37,7 +37,7 @@ instances {
     id: "script"
     properties {
       id: "orthoScale"
-      value: "0.3"
+      value: "2.0"
       type: PROPERTY_TYPE_NUMBER
     }
     properties {
