@@ -13,8 +13,8 @@ height = 640
 input_method = HiddenInputField
 
 [project]
-title = TowerOfYalr v0.0.1
-version = 0.0.1
+title = TowerOfYalr v0.3.0
+version = 0.3.0
 dependencies#0 = https://github.com/rgrams/rendercam/archive/v1.0.1.zip
 
 [graphics]
@@ -22,5 +22,5 @@ default_texture_min_filter = nearest
 default_texture_mag_filter = nearest
 
 [tilemap]
-max_tile_count = 4048
+max_tile_count = 6048
 

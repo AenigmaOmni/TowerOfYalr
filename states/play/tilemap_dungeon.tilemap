@@ -4,6 +4,20 @@ layers {
   z: 0.0
   is_visible: 1
   cell {
+    x: 34
+    y: -36
+    tile: 1
+    h_flip: 0
+    v_flip: 0
+  }
+  cell {
+    x: -36
+    y: -36
+    tile: 1
+    h_flip: 0
+    v_flip: 0
+  }
+  cell {
     x: 24
     y: -26
     tile: 1
@@ -27,6 +41,20 @@ layers {
   cell {
     x: -26
     y: 24
+    tile: 1
+    h_flip: 0
+    v_flip: 0
+  }
+  cell {
+    x: 34
+    y: 34
+    tile: 1
+    h_flip: 0
+    v_flip: 0
+  }
+  cell {
+    x: -36
+    y: 34
     tile: 1
     h_flip: 0
     v_flip: 0

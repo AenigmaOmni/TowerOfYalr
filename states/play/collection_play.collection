@@ -36,8 +36,18 @@ instances {
   component_properties {
     id: "script"
     properties {
+      id: "nearZ"
+      value: "-5.0"
+      type: PROPERTY_TYPE_NUMBER
+    }
+    properties {
+      id: "farZ"
+      value: "5.0"
+      type: PROPERTY_TYPE_NUMBER
+    }
+    properties {
       id: "orthoScale"
-      value: "2.0"
+      value: "0.3"
       type: PROPERTY_TYPE_NUMBER
     }
     properties {
@@ -83,7 +93,7 @@ instances {
   position {
     x: 0.0
     y: 0.0
-    z: 0.0
+    z: 2.0
   }
   rotation {
     x: 0.0

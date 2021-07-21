@@ -15,9 +15,10 @@ local max_backup_iter = 500
 local dungeon = {}
 local start_x, start_y, dungeon_width, dungeon_height
 local tile_size = 0
-local num_rooms = 30
+local level = 7
+local num_rooms = level * 12
 local rooms = 0
-local size = 3
+local size = 4
 local spacer = 1
 local doorways = {}
 local object_count = num_rooms * 1.5
@@ -77,20 +78,20 @@ local function make_room(room)
 		local x, y
 		if dir == 1 then --up
 			room.connection = 1
-			x = room.x
-			y = room.y + size + spacer * 2
+			x = math.floor(room.x)
+			y = math.floor(room.y) + size + spacer * 2
 		elseif dir == 2 then --down
 			room.connection = 2
-			x = room.x
-			y = room.y - size - spacer * 2
+			x = math.floor(room.x)
+			y = math.floor(room.y) - size - spacer * 2
 		elseif dir == 3 then -- right
 			room.connection = 3
-			x = room.x + size + spacer * 2
-			y = room.y
+			x = math.floor(room.x) + size + spacer * 2
+			y = math.floor(room.y)
 		elseif dir == 4 then --left
 			room.connection = 4
-			x = room.x - size - spacer * 2
-			y = room.y
+			x = math.floor(room.x) - size - spacer * 2
+			y = math.floor(room.y)
 		end
 		local width = size
 		local height = size
@@ -134,6 +135,7 @@ local function make_room(room)
 				if done == false and c2 >= max_backup_iter then
 					print("Backup plan failed, stopping generation. :(")
 					rooms = num_rooms
+					done = true
 					break
 				end
 			end
@@ -152,7 +154,9 @@ local function fill(rx, ry, rw, rh, tile)
 end
 
 local function place_stairs_to_next_level()
-	local room = dungeon[num_rooms]
+	local len = table.getn(dungeon)
+	local r = math.random(1, len)
+	local room = dungeon[r]
 	local x = room.x
 	local y = room.y
 	tilemap.set_tile("#tilemap_dungeon", "layer1", x + 1, y + 1, STAIRS)

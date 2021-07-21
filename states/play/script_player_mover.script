@@ -1,3 +1,5 @@
+local rendercam = require("rendercam.rendercam")
+
 local function end_turn(self)
 	msg.post("object_controller_game#script_controller_game", "turn_ended")
 end
@@ -21,6 +23,7 @@ function init(self)
 	self.moving = false
 	self.move = vmath.vector3()
 	self.spacer = go.get("object_globals#script_globals", "tilemap_size")
+	rendercam.follow(go.get_id())
 end
 
 function update(self, dt)
