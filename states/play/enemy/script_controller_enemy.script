@@ -1,0 +1,55 @@
+local function spawn_enemy(x, y, num)
+	local size = go.get("object_globals#script_globals", "tilemap_size")
+	local px = x * size
+	local py = y * size
+	self.enemy_count = self.enemy_count + 1
+	local pos = vmath.vector3()
+	pos.x = px
+	pos.y = py
+	pos.z = 2
+	local spooder = factory.create("#factory_enemy_spooder", pos)
+	table.insert(self.enemies, spooder)
+end
+
+local function generate(self)
+	while self.enemy_count < self.num_enemies do
+		local x = math.random(self.start_x, self.width)
+		local y = math.random(self.start_y, self.height)
+		--I have no idea why I needed to put +1 here :(
+		local t = tilemap.get_tile("object_tilemap_dungeon#tilemap_dungeon", "layer1", x+1, y)
+		if t == 1 then
+			local c = math.random(100)
+			if c < 40 then
+				--spawn bat
+				spawn_enemy(x, y, 1)
+				--spawn spooder
+			elseif c < 70 then
+				spawn_enemy(x, y, 2)
+			elseif c <  90 then
+				spawn_enemy(x, y, 3)
+			else then
+				spawn_enemy(x, y, 4)
+			end
+		end
+	end
+end
+
+function init(self)
+	self.start_x, self.start_y, self.width, self.height
+	= tilemap.get_bounds("object_tilemap_dungeon#tilemap_dungeon")
+	self.enemies = {}
+	self.num_enemies = 30
+	self.enemy_count = 0
+end
+
+function update(self, dt)
+	-- Add update code here
+	-- Learn more: https://defold.com/manuals/script/
+	-- Remove this function if not needed
+end
+
+function on_message(self, message_id, message, sender)
+	if message_id == hash("gen") then
+		generate(self)
+	end
+end

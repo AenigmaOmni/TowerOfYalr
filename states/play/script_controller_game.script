@@ -13,6 +13,7 @@ end
 function on_message(self, message_id, message, sender)
 	if message_id == hash("gen_complete") then
 		msg.post("object_player#script_player_mover", "place_start", message)
+		msg.post("object_controller_enemy#script_controller_enemy", "gen")
 	elseif message_id == hash("turn_ended") then
 		print("Turn Ended")
 	end

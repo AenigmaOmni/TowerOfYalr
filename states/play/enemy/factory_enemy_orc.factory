@@ -1,0 +1,2 @@
+prototype: "/states/play/object_enemy_orc.go"
+load_dynamically: false

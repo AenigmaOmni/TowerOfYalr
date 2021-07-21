@@ -47,7 +47,7 @@ instances {
     }
     properties {
       id: "orthoScale"
-      value: "2.0"
+      value: "0.3"
       type: PROPERTY_TYPE_NUMBER
     }
     properties {
@@ -110,6 +110,26 @@ instances {
 instances {
   id: "object_globals"
   prototype: "/states/play/object_globals.go"
+  position {
+    x: 0.0
+    y: 0.0
+    z: 0.0
+  }
+  rotation {
+    x: 0.0
+    y: 0.0
+    z: 0.0
+    w: 1.0
+  }
+  scale3 {
+    x: 1.0
+    y: 1.0
+    z: 1.0
+  }
+}
+instances {
+  id: "object_controller_enemy"
+  prototype: "/states/play/object_controller_enemy.go"
   position {
     x: 0.0
     y: 0.0
