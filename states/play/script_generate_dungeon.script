@@ -15,8 +15,8 @@ local max_backup_iter = 500
 local dungeon = {}
 local start_x, start_y, dungeon_width, dungeon_height
 local tile_size = 0
-local level = 7
-local num_rooms = level * 12
+local level = 2
+local num_rooms = level * 8
 local rooms = 0
 local size = 4
 local spacer = 1
@@ -173,7 +173,9 @@ end
 
 local function carve_rooms()
 	for k,v in ipairs(dungeon) do
-		fill(v.x, v.y, v.w, v.h, FLOOR)
+		local x = math.floor(v.x)
+		local y = math.floor(v.y)
+		fill(x, y, v.w, v.h, FLOOR)
 	end
 end
 
