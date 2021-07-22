@@ -272,7 +272,7 @@ local function remove_objects_in_way()
 		if tile ~= FLOOR then
 			if tile == BONE2 or tile == BONES or tile == CANDLE or tile == TORCH or tile == STONE or tile == POT
 			or tile == WEB then
-				tilemap.set_tile("#tilemap_dungeon", "layer2", x, y, FLOOR)
+				tilemap.set_tile("#tilemap_dungeon", "layer2", x, y, 0)
 			end
 		end
 		-- clear left spot
@@ -282,7 +282,7 @@ local function remove_objects_in_way()
 		if tile ~= FLOOR then
 			if tile == BONE2 or tile == BONES or tile == CANDLE or tile == TORCH or tile == STONE or tile == POT
 			or tile == WEB then
-				tilemap.set_tile("#tilemap_dungeon", "layer2", x, y, FLOOR)
+				tilemap.set_tile("#tilemap_dungeon", "layer2", x, y, 0)
 			end
 		end
 		-- clear right spot
@@ -292,7 +292,7 @@ local function remove_objects_in_way()
 		if tile ~= FLOOR then
 			if tile == BONE2 or tile == BONES or tile == CANDLE or tile == TORCH or tile == STONE or tile == POT
 			or tile == WEB then
-				tilemap.set_tile("#tilemap_dungeon", "layer2", x, y, FLOOR)
+				tilemap.set_tile("#tilemap_dungeon", "layer2", x, y, 0)
 			end
 		end
 		-- clear top spot
@@ -302,7 +302,7 @@ local function remove_objects_in_way()
 		if tile ~= FLOOR then
 			if tile == BONE2 or tile == BONES or tile == CANDLE or tile == TORCH or tile == STONE or tile == POT
 			or tile == WEB then
-				tilemap.set_tile("#tilemap_dungeon", "layer2", x, y, FLOOR)
+				tilemap.set_tile("#tilemap_dungeon", "layer2", x, y, 0)
 			end
 		end
 		-- clear bottom spot
@@ -312,7 +312,7 @@ local function remove_objects_in_way()
 		if tile ~= FLOOR then
 			if tile == BONE2 or tile == BONES or tile == CANDLE or tile == TORCH or tile == STONE or tile == POT
 			or tile == WEB then
-				tilemap.set_tile("#tilemap_dungeon", "layer2", x, y, FLOOR)
+				tilemap.set_tile("#tilemap_dungeon", "layer2", x, y, 0)
 			end
 		end
 	end

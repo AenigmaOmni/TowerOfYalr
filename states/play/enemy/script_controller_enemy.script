@@ -1,6 +1,7 @@
 local function enemy_turn(self)
-	for k, v in ipairs(self.enemies) do
-		print("enemy taking turn")
+	for k, v in pairs(self.enemies) do
+		msg.post(v, "take_turn")
+		msg.post(v, "turn_over")
 	end
 end
 
@@ -37,7 +38,8 @@ local function generate(self)
 		local y = math.random(self.start_y, self.height)
 		--I have no idea why I needed to put +1 here :(
 		local t = tilemap.get_tile("object_tilemap_dungeon#tilemap_dungeon", "layer1", x+1, y)
-		if t == 1 then
+		local t2 = tilemap.get_tile("object_tilemap_dungeon#tilemap_dungeon", "layer2", x+1, y)
+		if t == 1 and t2 == 0 then
 			local c = math.random(100)
 			if c < 40 then
 				--spawn bat
@@ -54,10 +56,24 @@ local function generate(self)
 	end
 end
 
+local function remove_dead_id(self, id)
+	for k, v in ipairs(self.enemies) do
+		if v == id then
+			table.remove(self.enemies, k)
+		end
+	end
+end
+
+local function does_object_exist(id)
+	return pcall(function(id) go.get_position(id) end, id) == true
+end
+
 local function remove_nils(self)
 	local new = {}
-	for k, v in pairs(self.enemies) do
-		table.insert(new, v)
+	for k, v in ipairs(self.enemies) do
+		if does_object_exist(v) then
+			table.insert(new, v)
+		end
 	end
 	self.enemies = new
 end
@@ -80,7 +96,7 @@ function on_message(self, message_id, message, sender)
 	if message_id == hash("gen") then
 		generate(self)
 	elseif message_id == hash("enemy_death") then
-		remove_nils(self)
+		remove_dead_id(self, message.id)
 	elseif message_id == hash("enemy_turn") then
 		enemy_turn(self)
 		msg.post(sender, "enemy_turn_end")

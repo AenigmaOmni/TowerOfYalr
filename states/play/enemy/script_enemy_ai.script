@@ -1,11 +1,55 @@
-function init(self)
-	
+go.property("turn", false)
+
+local detection_diam = 4
+
+local function detect()
+	local playerPos = go.get_position("object_player")
+	local size = go.get("object_globals#script_globals", "tilemap_size")
+	local center = go.get_position()
+	local centerX = center.x
+	local centerY = center.y
+	local leftX = centerX - detection_diam * size
+	local leftY = centerY - detection_diam * size
+	local rightX = centerX + detection_diam * size
+	local rightY = centerY + detection_diam * size
+
+	if playerPos.x > leftX and playerPos.x < rightX then
+		if playerPos.y > leftY and playerPos.y < rightY then
+			return true
+		end
+	end
+
+	return false
 end
 
-function final(self)
-	-- Add finalization code here
-	-- Learn more: https://defold.com/manuals/script/
-	-- Remove this function if not needed
+local function move_to_player(self)
+	local playerPos = go.get_position("object_player")
+	local size = go.get("object_globals#script_globals", "tilemap_size")
+	local pos = go.get_position()
+
+	local tpos = vmath.vector3()
+	tpos.z = pos.z
+
+	if playerPos.y > pos.y then
+		tpos.x = pos.x
+		tpos.y = pos.y + size
+	elseif playerPos.y < pos.y then
+		tpos.x = pos.x
+		tpos.y = pos.y - size
+	elseif playerPos.x > pos.x then
+		tpos.x = pos.x + size
+		tpos.y = pos.y
+	elseif playerPos.x < pos.x then
+		tpos.x = pos.x - size
+		tpos.y = pos.y
+	end
+
+	self.last_pos = go.get_position()
+	go.set_position(tpos)
+end
+
+function init(self)
+	self.last_pos = go.get_position()
 end
 
 function update(self, dt)
@@ -15,23 +59,17 @@ function update(self, dt)
 end
 
 function on_message(self, message_id, message, sender)
-	
-end
-
-function on_input(self, action_id, action)
-	-- Add input-handling code here. The game object this script is attached to
-	-- must have acquired input focus:
-	--
-	--    msg.post(".", "acquire_input_focus")
-	--
-	-- All mapped input bindings will be received. Mouse and touch input will
-	-- be received regardless of where on the screen it happened.
-	-- Learn more: https://defold.com/manuals/input/
-	-- Remove this function if not needed
-end
-
-function on_reload(self)
-	-- Add reload-handling code here
-	-- Learn more: https://defold.com/manuals/hot-reload/
-	-- Remove this function if not needed
+	if message_id == hash("take_turn") then
+		self.turn = true
+		if detect() then
+			move_to_player(self)
+		end
+	elseif message_id == hash("turn_over") then
+		self.turn = false
+	elseif message_id == hash("collision_response") then
+		if self.turn then
+			print("bounce")
+			go.set_position(self.last_pos)
+		end
+	end
 end

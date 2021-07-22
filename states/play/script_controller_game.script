@@ -3,18 +3,32 @@ local function enemy_turn_go(self)
 end
 
 function init(self)
-	self.timeoutTime = 0.05
-	self.timer = 0
-	self.timedOut = false
+	self.enemy_timeout_time = 0.5
+	self.player_timeout_time = 0.5
+	
+	self.player_timer = 0
+	self.enemy_timer = 0
+
+	self.enemy_timeout = false
+	self.player_timeout = false
 end
 
 function update(self, dt)
-	if self.timedOut then
-		self.timer = self.timer + dt
-		if self.timer >= self.timeoutTime then
-			self.timer = 0
-			self.timedOut = false
+	if self.player_timeout then
+		self.player_timer = self.player_timer + dt
+		if self.player_timer >= self.player_timeout_time then
+			self.player_timer = 0
+			self.player_timeout = false
+			msg.post("object_player#script_player_mover", "turn_over")
 			enemy_turn_go(self)
+			msg.post("object_controller_enemy#script_controller_enemy", "turn_over")
+		end
+	elseif self.enemy_timeout then
+		self.enemy_timer = self.enemy_timer + dt
+		if self.enemy_timer >= self.enemy_timeout_time then
+			self.enemy_timer = 0
+			self.enemy_timeout = false
+			msg.post("object_player#script_player_mover", "player_turn")
 		end
 	end
 end
@@ -24,15 +38,9 @@ function on_message(self, message_id, message, sender)
 		msg.post("object_player#script_player_mover", "place_start", message)
 		msg.post("object_controller_enemy#script_controller_enemy", "gen")
 		msg.post("object_player#script_player_mover", "player_turn")
-	elseif message_id == hash("turn_ended") then
-		self.timedOut = true
-	elseif message_id == hash("start_combat") then
-		self.timedOut = false
-		self.timer = 0
-	elseif message_id == hash("end_combat") then
-		enemy_turn_go(self)
+	elseif message_id == hash("end_turn") then
+		self.player_timeout = true
 	elseif message_id == hash("enemy_turn_end") then
-		print("Enemy turns over, now allowing player to move")
-		msg.post("object_player#script_player_mover", "player_turn")
+		self.enemy_timeout = true
 	end
 end
