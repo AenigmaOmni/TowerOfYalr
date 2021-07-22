@@ -1,6 +1,12 @@
 local function enemy_turn(self)
 	for k, v in pairs(self.enemies) do
 		msg.post(v, "take_turn")
+	end
+	msg.post("object_controller_game#script_controller_game", "enemy_end_turn")
+end
+
+local function turn_over(self)
+	for k, v in pairs(self.enemies) do
 		msg.post(v, "turn_over")
 	end
 end
@@ -99,6 +105,7 @@ function on_message(self, message_id, message, sender)
 		remove_dead_id(self, message.id)
 	elseif message_id == hash("enemy_turn") then
 		enemy_turn(self)
-		msg.post(sender, "enemy_turn_end")
+	elseif message_id == hash("turn_over") then
+		turn_over(self)
 	end
 end

@@ -3,8 +3,8 @@ local function enemy_turn_go(self)
 end
 
 function init(self)
-	self.enemy_timeout_time = 0.5
-	self.player_timeout_time = 0.5
+	self.enemy_timeout_time = 0.01
+	self.player_timeout_time = 0.01
 	
 	self.player_timer = 0
 	self.enemy_timer = 0
@@ -21,13 +21,13 @@ function update(self, dt)
 			self.player_timeout = false
 			msg.post("object_player#script_player_mover", "turn_over")
 			enemy_turn_go(self)
-			msg.post("object_controller_enemy#script_controller_enemy", "turn_over")
 		end
 	elseif self.enemy_timeout then
 		self.enemy_timer = self.enemy_timer + dt
 		if self.enemy_timer >= self.enemy_timeout_time then
 			self.enemy_timer = 0
 			self.enemy_timeout = false
+			msg.post("object_controller_enemy#script_controller_enemy", "turn_over")
 			msg.post("object_player#script_player_mover", "player_turn")
 		end
 	end
@@ -40,7 +40,7 @@ function on_message(self, message_id, message, sender)
 		msg.post("object_player#script_player_mover", "player_turn")
 	elseif message_id == hash("end_turn") then
 		self.player_timeout = true
-	elseif message_id == hash("enemy_turn_end") then
+	elseif message_id == hash("enemy_end_turn") then
 		self.enemy_timeout = true
 	end
 end
