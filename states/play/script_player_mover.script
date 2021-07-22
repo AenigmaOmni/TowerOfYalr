@@ -4,6 +4,7 @@ go.property("hp", 20)
 local rendercam = require("rendercam.rendercam")
 
 local function end_turn(self)
+	self.turn = false
 	msg.post("object_controller_game#script_controller_game", "turn_ended")
 end
 
@@ -22,6 +23,7 @@ local function move(self)
 end
 
 function init(self)
+	self.turn = false
 	msg.post(".", "acquire_input_focus")
 	self.last_pos = go.get_position()
 	self.moving = false
@@ -31,7 +33,7 @@ function init(self)
 end
 
 function update(self, dt)
-	if self.moving then
+	if self.moving and self.turn then
 		move(self)
 		self.moving = false
 		end_turn(self)
@@ -45,31 +47,37 @@ function on_message(self, message_id, message, sender)
 		p.y = message.y
 		go.set_position(p)
 	elseif message_id == hash("collision_response") then
+		msg.post("object_controller_game#script_controller_game", "start_combat")
 		go.set_position(self.last_pos)
 		msg.post(message.other_id, "hit", { damage = self.damage} )
+		msg.post("object_controller_game#script_controller_game", "end_combat")
+	elseif message_id == hash("player_turn") then
+		self.turn = true
 	end
 end
 
 function on_input(self, action_id, action)
-	if action_id == hash("up") and action.pressed then
-		self.last_pos = go.get_position()
-		self.move.x = 0
-		self.move.y = 1
-		self.moving = true
-	elseif action_id == hash("down") and action.pressed then
-		self.last_pos = go.get_position()
-		self.move.x = 0
-		self.move.y = -1
-		self.moving = true
-	elseif action_id == hash("left") and action.pressed then
-		self.last_pos = go.get_position()
-		self.move.x = -1
-		self.move.y = 0
-		self.moving = true
-	elseif action_id == hash("right") and action.pressed then
-		self.last_pos = go.get_position()
-		self.move.x = 1
-		self.moving = true
-		self.move.y = 0
+	if self.turn then
+		if action_id == hash("up") and action.pressed then
+			self.last_pos = go.get_position()
+			self.move.x = 0
+			self.move.y = 1
+			self.moving = true
+		elseif action_id == hash("down") and action.pressed then
+			self.last_pos = go.get_position()
+			self.move.x = 0
+			self.move.y = -1
+			self.moving = true
+		elseif action_id == hash("left") and action.pressed then
+			self.last_pos = go.get_position()
+			self.move.x = -1
+			self.move.y = 0
+			self.moving = true
+		elseif action_id == hash("right") and action.pressed then
+			self.last_pos = go.get_position()
+			self.move.x = 1
+			self.moving = true
+			self.move.y = 0
+		end
 	end
 end

@@ -1,20 +1,38 @@
+local function enemy_turn_go(self)
+	msg.post("object_controller_enemy#script_controller_enemy", "enemy_turn")
+end
+
 function init(self)
-	-- Add initialization code here
-	-- Learn more: https://defold.com/manuals/script/
-	-- Remove this function if not needed
+	self.timeoutTime = 0.05
+	self.timer = 0
+	self.timedOut = false
 end
 
 function update(self, dt)
-	-- Add update code here
-	-- Learn more: https://defold.com/manuals/script/
-	-- Remove this function if not needed
+	if self.timedOut then
+		self.timer = self.timer + dt
+		if self.timer >= self.timeoutTime then
+			self.timer = 0
+			self.timedOut = false
+			enemy_turn_go(self)
+		end
+	end
 end
 
 function on_message(self, message_id, message, sender)
 	if message_id == hash("gen_complete") then
 		msg.post("object_player#script_player_mover", "place_start", message)
 		msg.post("object_controller_enemy#script_controller_enemy", "gen")
+		msg.post("object_player#script_player_mover", "player_turn")
 	elseif message_id == hash("turn_ended") then
-		print("Turn Ended")
+		self.timedOut = true
+	elseif message_id == hash("start_combat") then
+		self.timedOut = false
+		self.timer = 0
+	elseif message_id == hash("end_combat") then
+		enemy_turn_go(self)
+	elseif message_id == hash("enemy_turn_end") then
+		print("Enemy turns over, now allowing player to move")
+		msg.post("object_player#script_player_mover", "player_turn")
 	end
 end

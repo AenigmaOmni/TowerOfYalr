@@ -1,3 +1,9 @@
+local function enemy_turn(self)
+	for k, v in ipairs(self.enemies) do
+		print("enemy taking turn")
+	end
+end
+
 local function spawn_enemy(self, x, y, num)
 	local size = go.get("object_globals#script_globals", "tilemap_size")
 	local px = x * size
@@ -50,7 +56,7 @@ end
 
 local function remove_nils(self)
 	local new = {}
-	for k, v in pairs(self.enemies)
+	for k, v in pairs(self.enemies) do
 		table.insert(new, v)
 	end
 	self.enemies = new
@@ -75,5 +81,8 @@ function on_message(self, message_id, message, sender)
 		generate(self)
 	elseif message_id == hash("enemy_death") then
 		remove_nils(self)
+	elseif message_id == hash("enemy_turn") then
+		enemy_turn(self)
+		msg.post(sender, "enemy_turn_end")
 	end
 end
