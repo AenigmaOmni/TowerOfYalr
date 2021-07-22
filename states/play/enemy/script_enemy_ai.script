@@ -45,9 +45,9 @@ local function move_to_player(self, enemies)
 	end
 
 	local t = tilemap.get_tile("object_tilemap_dungeon#tilemap_dungeon", "layer1", 
-	tpos.x +1 / size, tpos.y +1/ size)
+	(tpos.x +1) / size, (tpos.y) / size)
 	local t2 = tilemap.get_tile("object_tilemap_dungeon#tilemap_dungeon", "layer2", 
-	tpos.x +1/ size, tpos.y +1/ size)
+	(tpos.x) / size, (tpos.y) / size)
 	
 	if t == 1 and t2 == 0 then
 		self.last_pos = go.get_position()
