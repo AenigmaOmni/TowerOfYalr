@@ -48,6 +48,14 @@ local function generate(self)
 	end
 end
 
+local function remove_nils(self)
+	local new = {}
+	for k, v in pairs(self.enemies)
+		table.insert(new, v)
+	end
+	self.enemies = new
+end
+
 function init(self)
 	self.start_x, self.start_y, self.width, self.height
 	= tilemap.get_bounds("object_tilemap_dungeon#tilemap_dungeon")
@@ -65,5 +73,7 @@ end
 function on_message(self, message_id, message, sender)
 	if message_id == hash("gen") then
 		generate(self)
+	elseif message_id == hash("enemy_death") then
+		remove_nils(self)
 	end
 end

@@ -5,6 +5,7 @@ local function hit(self, damage)
 	self.hp = self.hp - damage
 	if self.hp <= 0 then
 		go.delete()
+		msg.post("object_controller_enemy#script_controller_enemy", "enemy_death")
 	end
 end
 
