@@ -1,0 +1,29 @@
+go.property("hp", 2)
+
+local function hit(self)
+	self.flash = true
+end
+
+function init(self)
+	self.flash = false
+	self.flashTimer = 0
+	self.flashTime = 0.1
+end
+
+function update(self, dt)
+	if self.flash then
+		go.set("#sprite", "tint", vmath.vector4(1, 0, 0, 1))
+		self.flashTimer = self.flashTimer + dt
+		if self.flashTimer >= self.flashTime then
+			self.flashTimer = 0
+			self.flash = false
+			go.set("#sprite", "tint", vmath.vector4(1,1,1,1))
+		end
+	end
+end
+
+function on_message(self, message_id, message, sender)
+	if message_id == hash("hit") then
+		hit(self)
+	end
+end
