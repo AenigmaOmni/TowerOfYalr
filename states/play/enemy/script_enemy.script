@@ -1,7 +1,11 @@
 go.property("hp", 2)
 
-local function hit(self)
+local function hit(self, damage)
 	self.flash = true
+	self.hp = self.hp - damage
+	if self.hp <= 0 then
+		go.delete()
+	end
 end
 
 function init(self)
@@ -24,6 +28,6 @@ end
 
 function on_message(self, message_id, message, sender)
 	if message_id == hash("hit") then
-		hit(self)
+		hit(self, message.damage)
 	end
 end

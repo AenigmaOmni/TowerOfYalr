@@ -1,3 +1,6 @@
+go.property("damage", 1)
+go.property("hp", 20)
+
 local rendercam = require("rendercam.rendercam")
 
 local function end_turn(self)
@@ -43,7 +46,7 @@ function on_message(self, message_id, message, sender)
 		go.set_position(p)
 	elseif message_id == hash("collision_response") then
 		go.set_position(self.last_pos)
-		msg.post(message.other_id, "hit")
+		msg.post(message.other_id, "hit", { damage = self.damage} )
 	end
 end
 
