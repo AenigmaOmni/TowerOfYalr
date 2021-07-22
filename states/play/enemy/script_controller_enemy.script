@@ -1,7 +1,23 @@
+local function check_for_same_spot(self)
+	for k,v in ipairs(self.enemies) do
+		local pos = go.get_position(v)
+		for l, e in ipairs(self.enemies) do
+			if v ~= e then
+				local opos = go.get_position(e)
+				if pos == opos then
+					msg.post(v, "move_to_last_pos")
+					break
+				end
+			end
+		end
+	end
+end
+
 local function enemy_turn(self)
 	for k, v in pairs(self.enemies) do
-		msg.post(v, "take_turn")
+		msg.post(v, "take_turn", {enemies = self.enemies})
 	end
+	check_for_same_spot(self)
 	msg.post("object_controller_game#script_controller_game", "enemy_end_turn")
 end
 
@@ -87,9 +103,9 @@ end
 function init(self)
 	self.start_x, self.start_y, self.width, self.height
 	= tilemap.get_bounds("object_tilemap_dungeon#tilemap_dungeon")
-	self.enemies = {}
 	self.num_enemies = 30
 	self.enemy_count = 0
+	self.enemies = {}
 end
 
 function update(self, dt)

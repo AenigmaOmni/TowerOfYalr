@@ -22,7 +22,7 @@ local function detect()
 	return false
 end
 
-local function move_to_player(self)
+local function move_to_player(self, enemies)
 	local playerPos = go.get_position("object_player")
 	local size = go.get("object_globals#script_globals", "tilemap_size")
 	local pos = go.get_position()
@@ -62,7 +62,7 @@ function on_message(self, message_id, message, sender)
 	if message_id == hash("take_turn") then
 		self.turn = true
 		if detect() then
-			move_to_player(self)
+			move_to_player(self, message.enemies)
 		end
 	elseif message_id == hash("turn_over") then
 		self.turn = false
@@ -71,5 +71,8 @@ function on_message(self, message_id, message, sender)
 			print("bounce")
 			go.set_position(self.last_pos)
 		end
+	elseif message_id == hash("move_to_last_pos") then
+		print("moved to last pos")
+		go.set_position(self.last_pos)
 	end
 end
