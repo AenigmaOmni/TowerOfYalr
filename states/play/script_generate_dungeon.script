@@ -159,7 +159,7 @@ local function place_stairs_to_next_level()
 	local room = dungeon[r]
 	local x = room.x
 	local y = room.y
-	tilemap.set_tile("#tilemap_dungeon", "layer1", x + 1, y + 1, STAIRS)
+	tilemap.set_tile("#tilemap_dungeon", "layer2", x + 1, y + 1, STAIRS)
 end
 
 local function make_dummy_rooms()
@@ -258,7 +258,7 @@ local function place_random_objects()
 			t = STONE
 		end
 
-		tilemap.set_tile("#tilemap_dungeon", "layer1", px, py, t)
+		tilemap.set_tile("#tilemap_dungeon", "layer2", px, py, t)
 		count = count + 1
 	end
 end
@@ -268,51 +268,51 @@ local function remove_objects_in_way()
 		-- clear doorway
 		local x = v.x
 		local y = v.y
-		local tile = tilemap.get_tile("#tilemap_dungeon", "layer1", x, y)
+		local tile = tilemap.get_tile("#tilemap_dungeon", "layer2", x, y)
 		if tile ~= FLOOR then
 			if tile == BONE2 or tile == BONES or tile == CANDLE or tile == TORCH or tile == STONE or tile == POT
 			or tile == WEB then
-				tilemap.set_tile("#tilemap_dungeon", "layer1", x, y, FLOOR)
+				tilemap.set_tile("#tilemap_dungeon", "layer2", x, y, FLOOR)
 			end
 		end
 		-- clear left spot
 		x = v.x - 1
 		y = y
-		tile = tilemap.get_tile("#tilemap_dungeon", "layer1", x, y)
+		tile = tilemap.get_tile("#tilemap_dungeon", "layer2", x, y)
 		if tile ~= FLOOR then
 			if tile == BONE2 or tile == BONES or tile == CANDLE or tile == TORCH or tile == STONE or tile == POT
 			or tile == WEB then
-				tilemap.set_tile("#tilemap_dungeon", "layer1", x, y, FLOOR)
+				tilemap.set_tile("#tilemap_dungeon", "layer2", x, y, FLOOR)
 			end
 		end
 		-- clear right spot
 		x = v.x + 1
 		y = y
-		tile = tilemap.get_tile("#tilemap_dungeon", "layer1", x, y)
+		tile = tilemap.get_tile("#tilemap_dungeon", "layer2", x, y)
 		if tile ~= FLOOR then
 			if tile == BONE2 or tile == BONES or tile == CANDLE or tile == TORCH or tile == STONE or tile == POT
 			or tile == WEB then
-				tilemap.set_tile("#tilemap_dungeon", "layer1", x, y, FLOOR)
+				tilemap.set_tile("#tilemap_dungeon", "layer2", x, y, FLOOR)
 			end
 		end
 		-- clear top spot
 		x = v.x
 		y = v.y + 1
-		tile = tilemap.get_tile("#tilemap_dungeon", "layer1", x, y)
+		tile = tilemap.get_tile("#tilemap_dungeon", "layer2", x, y)
 		if tile ~= FLOOR then
 			if tile == BONE2 or tile == BONES or tile == CANDLE or tile == TORCH or tile == STONE or tile == POT
 			or tile == WEB then
-				tilemap.set_tile("#tilemap_dungeon", "layer1", x, y, FLOOR)
+				tilemap.set_tile("#tilemap_dungeon", "layer2", x, y, FLOOR)
 			end
 		end
 		-- clear bottom spot
 		x = v.x
 		y = v.y - 1
-		tile = tilemap.get_tile("#tilemap_dungeon", "layer1", x, y)
+		tile = tilemap.get_tile("#tilemap_dungeon", "layer2", x, y)
 		if tile ~= FLOOR then
 			if tile == BONE2 or tile == BONES or tile == CANDLE or tile == TORCH or tile == STONE or tile == POT
 			or tile == WEB then
-				tilemap.set_tile("#tilemap_dungeon", "layer1", x, y, FLOOR)
+				tilemap.set_tile("#tilemap_dungeon", "layer2", x, y, FLOOR)
 			end
 		end
 	end
