@@ -1,4 +1,5 @@
 go.property("hp", 2)
+go.property("damage", 1)
 
 local function hit(self, damage)
 	self.flash = true

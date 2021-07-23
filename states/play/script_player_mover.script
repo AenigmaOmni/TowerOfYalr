@@ -3,6 +3,13 @@ go.property("hp", 20)
 
 local rendercam = require("rendercam.rendercam")
 
+local function take_damage(self, damage)
+	self.hp = self.hp - damage
+	if self.hp <= 0 then
+		print("Dead :(")
+	end
+end
+
 local function move(self)
 	local p = go.get_position()
 	local size = go.get("object_globals#script_globals", "tilemap_size")
@@ -37,6 +44,9 @@ function init(self)
 	self.move = vmath.vector3()
 	self.spacer = go.get("object_globals#script_globals", "tilemap_size")
 	rendercam.follow(go.get_id())
+	self.flash = false
+	self.flashTimer = 0
+	self.flashTime = 0.1
 end
 
 function update(self, dt)
@@ -44,6 +54,15 @@ function update(self, dt)
 		move(self)
 		self.moving = false
 		msg.post("object_controller_game#script_controller_game", "end_turn")
+	end
+	if self.flash then
+		go.set("#sprite", "tint", vmath.vector4(1, 0, 0, 1))
+		self.flashTimer = self.flashTimer + dt
+		if self.flashTimer >= self.flashTime then
+			self.flashTimer = 0
+			self.flash = false
+			go.set("#sprite", "tint", vmath.vector4(1,1,1,1))
+		end
 	end
 end
 
@@ -63,6 +82,9 @@ function on_message(self, message_id, message, sender)
 		self.canMove = true
 	elseif message_id == hash("turn_over") then
 		self.turn = false
+	elseif message_id == hash("hit") then
+		self.flash = true
+		take_damage(self, message.damage)
 	end
 end
 

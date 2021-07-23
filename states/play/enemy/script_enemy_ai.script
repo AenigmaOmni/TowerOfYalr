@@ -75,7 +75,8 @@ function on_message(self, message_id, message, sender)
 		self.turn = false
 	elseif message_id == hash("collision_response") then
 		if self.turn then
-			print("bounce")
+			local d = go.get("#script_enemy", "damage")
+			msg.post(message.other_id, "hit", { damage = d})
 			go.set_position(self.last_pos)
 		end
 	elseif message_id == hash("move_to_last_pos") then
